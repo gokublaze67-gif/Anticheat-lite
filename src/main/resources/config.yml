@@ -1,0 +1,69 @@
+# AntiCheatLite config
+#
+# IMPORTANT CONTEXT:
+# Freecam is 100% client-side (only the camera moves, not the player's actual
+# position/rotation packets), so no server-side plugin can directly "detect"
+# that a client is in freecam. This plugin instead reduces what a freecam
+# user can gain from scouting, and flags suspicious follow-up behavior for
+# staff to review manually. Pair this with Paper's built-in anti-xray
+# (see bottom of this file) and a real combat/movement anticheat like
+# GrimAC or Vulcan (both free & open source) for reach/killaura/xray-adjacent
+# cheats, which freecam scouting is normally used to set up.
+
+visibility:
+  enabled: true
+  # Players farther than this (blocks) from another player will be hidden
+  # from that player's client entirely (no tab list ping, no entity packet).
+  # This means freecam can't be used to "scout ahead" beyond this range,
+  # since the client never receives the other player's entity data at all.
+  max-visible-range: 48
+  # How often (in ticks, 20 = 1 sec) to recheck visibility pairs.
+  check-interval-ticks: 20
+
+suspicious-activity:
+  enabled: true
+  # If a player's camera-relevant rotation (yaw/pitch) stays essentially
+  # frozen for at least this many ticks while they are also not moving
+  # their position, then within a short window afterward they move in a
+  # beeline toward a player/location that was previously far outside
+  # normal render/visibility range, it gets logged as suspicious.
+  # This is a HEURISTIC ONLY - it is not proof of freecam use, just a
+  # signal for staff to review (e.g. via replay mods or manual watching).
+  frozen-rotation-ticks: 100
+  beeline-window-ticks: 200
+  beeline-min-distance: 40
+  log-to-console: true
+  notify-staff-permission: anticheatlite.notify
+
+anti-xray-reminder:
+  # This plugin does NOT reimplement anti-xray - Paper already has a robust,
+  # native, free implementation. Enable it directly in
+  # config/paper-world-defaults.yml (or paper-world/<world>.yml):
+  #
+  # anticheat:
+  #   anti-xray:
+  #     enabled: true
+  #     engine-mode: 2          # 1 = hide obscured, 2 = also fakes ores (stronger)
+  #     hidden-blocks:
+  #       - copper_ore
+  #       - deepslate_copper_ore
+  #       - gold_ore
+  #       - deepslate_gold_ore
+  #       - iron_ore
+  #       - deepslate_iron_ore
+  #       - diamond_ore
+  #       - deepslate_diamond_ore
+  #       - redstone_ore
+  #       - deepslate_redstone_ore
+  #       - emerald_ore
+  #       - deepslate_emerald_ore
+  #       - lapis_ore
+  #       - deepslate_lapis_ore
+  #     replacement-blocks:
+  #       - stone
+  #       - deepslate
+  #
+  # This alone removes most of the incentive for freecam-based ore/base
+  # scouting, since hidden ores are replaced with stone until a player is
+  # actually close enough to legitimately see them.
+  reminder-only: true
